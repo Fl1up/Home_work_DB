@@ -7,24 +7,6 @@ class DBManager:
         self.conn = psycopg2.connect(host="localhost", database="home_work", user="postgres")
         self.cur = self.conn.cursor()
 
-    def create_tables(self):  # Создание бд компании и вакансии в них
-        self.cur.execute("""CREATE TABLE employers (
-              id SERIAL PRIMARY KEY,
-              name VARCHAR(255) NOT NULL,
-              url VARCHAR(255) NOT NULL
-          )""")
-        self.conn.commit()
-
-        self.cur.execute("""CREATE TABLE vacancies (
-              id SERIAL PRIMARY KEY,
-              name VARCHAR(255) NOT NULL,
-              salary varchar(255) ,
-              url VARCHAR(255) NOT NULL,
-              employer_id INTEGER NOT NULL,
-              FOREIGN KEY (employer_id) REFERENCES employers (id)
-          )""")
-        self.conn.commit()
-
     def add_employer(self, name, url): # заполнение таблиц компании
         self.cur.execute("""INSERT INTO employers (name, url) VALUES (%s, %s) RETURNING id""", (name, url))
         employer_id = self.cur.fetchone()[0]
