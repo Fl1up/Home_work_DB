@@ -35,3 +35,5 @@
 """SELECT * FROM vacancies WHERE name LIKE 'Python%';""" # поиск вакансии с фильтром по слову
 
  """DROP TABLE vacancies,employers""" # функция для перезапуска без удаления бд в редакторе бд
+
+
