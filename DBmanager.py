@@ -3,8 +3,8 @@ import psycopg2
 
 class DBManager:
     """Класс подключение к бд заполнение ее и фильтрация"""
-    def __init__(self, host, database, user):
-        self.conn = psycopg2.connect(host="localhost", database="home_work", user="postgres")
+    def __init__(self):
+        self.conn = psycopg2.connect(host="localhost", database="north_data", user="postgres")
         self.cur = self.conn.cursor()
 
     def create_tables(self):
@@ -41,7 +41,6 @@ class DBManager:
         self.cur.execute("""SELECT employers.name, COUNT(vacancies.id) FROM employers LEFT JOIN vacancies ON employers.id = vacancies.employer_id
             GROUP BY employers.name""")
         result = self.cur.fetchall()
-        print(result)
         return result
 
     def get_all_vacancies(self):  # функция вывода компании вакансий зп и ссылке
@@ -58,13 +57,11 @@ class DBManager:
                 "url": row[3]
             }
             vacancies.append(vacancy)
-            print(vacancies)
         return vacancies
 
     def get_avg_salary(self):  # функция поиска средней зп
         self.cur.execute("""SELECT AVG(CAST(salary AS numeric)) FROM vacancies""")
         result = self.cur.fetchone()[0]
-        print(result)
         return result
 
     def get_vacancies_with_higher_salary(self):  # поиск вакансии по средней зп и фильтрации выше нее
@@ -72,15 +69,12 @@ class DBManager:
         avg_salary = self.cur.fetchone()[0]
         self.cur.execute(f"""SELECT * FROM vacancies WHERE CAST(salary AS numeric) > {avg_salary}""")
         result = self.cur.fetchall()
-        print(result)
         return result
 
-    def get_vacancies_with_keyword(self):  # поиск вакансии с фильтром по слову
-        self.cur.execute("""SELECT * FROM vacancies WHERE name LIKE 'Python%';""")
+    def get_vacancies_with_keyword(self, word):
+        self.cur.execute(f"SELECT * FROM vacancies WHERE name LIKE '{word}%'")
         result = self.cur.fetchall()
-        print(result)
         return result
-
     def drop(self):  # функция для перезапуска без удаления бд в редакторе бд
         self.cur.execute("""DROP TABLE vacancies,employers""")
         self.conn.commit()
